@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import { nanoid } from 'nanoid';
 import * as yup from 'yup';
@@ -22,53 +21,42 @@ const schema = yup.object().shape({
     ),
 });
 
-class ContactForm extends Component {
-  initialValues = {
-    name: '',
-    number: '',
-  };
-  handleSubmit = ({ name, number }, { resetForm }) => {
-    const nameInContacts = this.props.contacts.find(
-      contact => contact.name.toLowerCase() === name.toLowerCase()
-    );
-    if (nameInContacts) {
-      alert(`${name} is already in contacts`);
-      resetForm();
-      return;
-    }
-    const contact = { id: nanoid(), name, number };
-    this.props.onSubmit(contact);
+const ContactForm = ({ onSubmit }) => {
+  const handleSubmit = ({ name, number }, { resetForm }) => {
+    onSubmit({ id: nanoid(), name, number });
     resetForm();
   };
-  render() {
-    return (
-      <Formik
-        initialValues={this.initialValues}
-        validationSchema={schema}
-        onSubmit={this.handleSubmit}
-      >
-        <FormContainer>
-          <Form autoComplete="off">
-            <FormLabel htmlFor="name">
-              Name
-              <Field type="text" name="name" />
-              <ErrorMessage name="name" component="div" />
-            </FormLabel>
-            <FormLabel htmlFor="number">
-              Number
-              <Field type="tel" name="number" />
-              <ErrorMessage name="number" component="div" />
-            </FormLabel>
-            <FormButton type="submit">Add contact</FormButton>
-          </Form>
-        </FormContainer>
-      </Formik>
-    );
-  }
-}
+
+  return (
+    <Formik
+      initialValues={{
+        name: '',
+        number: '',
+      }}
+      validationSchema={schema}
+      onSubmit={handleSubmit}
+    >
+      <FormContainer>
+        <Form autoComplete="off">
+          <FormLabel htmlFor="name">
+            Name
+            <Field type="text" name="name" />
+            <ErrorMessage name="name" component="div" />
+          </FormLabel>
+          <FormLabel htmlFor="number">
+            Number
+            <Field type="tel" name="number" />
+            <ErrorMessage name="number" component="div" />
+          </FormLabel>
+          <FormButton type="submit">Add contact</FormButton>
+        </Form>
+      </FormContainer>
+    </Formik>
+  );
+};
 
 ContactForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
-  contacts: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
+
 export default ContactForm;
